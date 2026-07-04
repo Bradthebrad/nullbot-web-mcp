@@ -1,0 +1,21 @@
+# Build outputs
+/nullbot-web-mcp
+/nullbot-web-mcp.exe
+/dist/
+/bin/
+/screenshots/
+
+# Go caches / coverage
+*.test
+*.out
+coverage.txt
+
+# Local editor / OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local environment files
+.env
+.env.*
