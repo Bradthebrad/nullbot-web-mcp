@@ -3,7 +3,7 @@ package web
 import (
 	"context"
 
-	"tinychain/mcp"
+	"github.com/Bradthebrad/tinychain/mcp"
 )
 
 const defaultCDPEndpoint = "http://127.0.0.1:9222"

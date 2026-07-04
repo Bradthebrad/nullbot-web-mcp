@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"tinychain/mcp"
+	"github.com/Bradthebrad/tinychain/mcp"
 )
 
 func (w *WebTools) browserStatusTool() mcp.Tool {

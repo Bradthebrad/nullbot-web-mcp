@@ -3,7 +3,7 @@
 Status: DRAFT FOR REVIEW. Nothing here is built yet. This document is the agreed scaffold/spec so we can execute together step by step.
 
 This server follows the established NullBot family conventions discovered in the workspace:
-- `tinychain/mcp` as the MCP runtime (`mcp.NewServer`, `server.AddTool`, `mcp.Tool`, `mcp.Text`, `mcp.ToolResult`).
+- `github.com/Bradthebrad/tinychain/mcp` as the MCP runtime (`mcp.NewServer`, `server.AddTool`, `mcp.Tool`, `mcp.Text`, `mcp.ToolResult`).
 - `cmd/<server>/main.go` + `internal/<domain>/...` layout.
 - Standard transport flags (`stdio` default; `http`, `streamable-http`, `sse` optional).
 - Workspace-relative path safety (mirrors `imagetools/workspace.go`).
@@ -67,18 +67,14 @@ nullbot-web-mcp/
     release.ps1               # adapted from imagetools release.ps1
 ```
 
-`go.mod` mirrors the sibling `replace` directives:
+`go.mod` uses tagged public Go modules:
 
 ```go
 module github.com/Bradthebrad/nullbot-web-mcp
 
 go 1.26.4
 
-require tinychain/mcp v0.0.0
-
-replace tinychain/mcp => ../tinychain/mcp
-replace tinychain     => ../tinychain/client
-replace tinychain/agent => ../tinychain/agent
+require github.com/Bradthebrad/tinychain v0.2.0
 ```
 
 Likely third-party deps:

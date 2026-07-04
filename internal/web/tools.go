@@ -1,6 +1,6 @@
 package web
 
-import "tinychain/mcp"
+import "github.com/Bradthebrad/tinychain/mcp"
 
 func (w *WebTools) Tools() []mcp.Tool {
 	return []mcp.Tool{

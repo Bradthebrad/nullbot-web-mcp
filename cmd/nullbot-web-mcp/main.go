@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/Bradthebrad/nullbot-web-mcp/internal/web"
-	"tinychain/mcp"
+	"github.com/Bradthebrad/tinychain/mcp"
 )
 
 const version = "0.1.0"

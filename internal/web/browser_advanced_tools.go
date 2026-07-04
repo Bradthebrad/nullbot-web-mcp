@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"tinychain/mcp"
+	"github.com/Bradthebrad/tinychain/mcp"
 )
 
 func (w *WebTools) browserQueryTool() mcp.Tool {
