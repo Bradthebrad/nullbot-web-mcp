@@ -1,7 +1,11 @@
 param(
     [string]$Version = "v0.1.0",
+    [switch]$Publish,
+    [switch]$UpdateExisting,
     [switch]$NoCompress,
-    [string]$UpxPath = "C:\tmp\upx-5.1.1-win64\upx.exe"
+    [string]$Repo = "Bradthebrad/nullbot-web-mcp",
+    [string]$UpxPath = "C:\tmp\upx-5.1.1-win64\upx.exe",
+    [string]$GhPath = "C:\Program Files\GitHub CLI\gh.exe"
 )
 
 Set-StrictMode -Version Latest
@@ -119,3 +123,45 @@ This script only creates local artifacts. Creating a GitHub release, editing mar
 
 Write-Host "Release files written to $outDir"
 Get-ChildItem -LiteralPath $outDir | Select-Object Name, Length
+
+if ($Publish) {
+    if (-not (Test-Path -LiteralPath $GhPath)) {
+        $cmd = Get-Command gh -ErrorAction SilentlyContinue
+        if ($null -eq $cmd) {
+            throw "GitHub CLI not found. Install gh or pass -GhPath."
+        }
+        $GhPath = $cmd.Source
+    }
+
+    $releaseExists = $false
+    $oldErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        & $GhPath release view $Version --repo $Repo *> $null
+        $releaseViewExitCode = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $oldErrorActionPreference
+    }
+    if ($releaseViewExitCode -eq 0) {
+        $releaseExists = $true
+    }
+
+    $uploadAssets = @()
+    $uploadAssets += $assets
+    $uploadAssets += $checksum
+
+    if ($releaseExists) {
+        if (-not $UpdateExisting) {
+            throw "Release $Version already exists. Re-run with -UpdateExisting to replace assets."
+        }
+        & $GhPath release upload $Version @uploadAssets --repo $Repo --clobber
+        if ($LASTEXITCODE -ne 0) {
+            throw "gh release upload failed with exit code $LASTEXITCODE"
+        }
+    } else {
+        & $GhPath release create $Version @uploadAssets --repo $Repo --title "NullBot Web MCP $Version" --notes-file $notes
+        if ($LASTEXITCODE -ne 0) {
+            throw "gh release create failed with exit code $LASTEXITCODE"
+        }
+    }
+}
