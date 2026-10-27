@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -105,13 +106,16 @@ func TestWorkspaceOutputSafetyHardening(t *testing.T) {
 	outside := filepath.Join(t.TempDir(), "escape.png")
 	badPaths := []string{
 		"../escape.png",
-		"..\\escape.png",
 		"screens/../../escape.png",
 		"",
 		".",
 		outside,
 		filepath.VolumeName(workspace) + string(os.PathSeparator) + "escape.png",
 		"screens/not-a-png.jpg",
+	}
+	if runtime.GOOS == "windows" {
+		// A backslash separates folders only on Windows; elsewhere it is part of a file name.
+		badPaths = append(badPaths, "..\\escape.png")
 	}
 	for _, outputPath := range badPaths {
 		t.Run(outputPath, func(t *testing.T) {
