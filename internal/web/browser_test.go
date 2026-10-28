@@ -258,7 +258,8 @@ func TestBrowserScreenshotOutputPathSafetyBeforeAttach(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	bad := []string{"../escape.png", tmp + string(os.PathSeparator) + "escape.png", "notpng.txt"}
+	// An absolute path is fine inside the workspace; outside it, it is refused.
+	bad := []string{"../escape.png", filepath.Join(t.TempDir(), "escape.png"), "notpng.txt"}
 	for _, outputPath := range bad {
 		result, err := tools.browserScreenshotTool().Handler(context.Background(), map[string]any{"output_path": outputPath})
 		if err != nil {

@@ -11,7 +11,7 @@ import (
 	"github.com/Bradthebrad/tinychain/mcp"
 )
 
-const version = "0.1.0"
+const version = "0.3.0"
 
 func main() {
 	transport := flag.String("transport", "stdio", "Transport: stdio, streamable-http, http, or sse.")
@@ -22,13 +22,13 @@ func main() {
 	workspace := flag.String("workspace", ".", "Workspace root. Output paths cannot escape this directory.")
 	searchProvider := flag.String("search-provider", "auto", "Search provider preference: auto, brave, tavily, serpapi, bing, or none.")
 	cdpEndpoint := flag.String("cdp-endpoint", "http://127.0.0.1:9222", "Chromium DevTools Protocol endpoint for browser attach.")
-	browserPath := flag.String("browser-path", "", "Optional Chrome/Edge/Brave executable path for future browser_launch support.")
-	allowEval := flag.Bool("allow-eval", false, "Enable future browser_eval JavaScript evaluation tool. Disabled by default.")
+	browserPath := flag.String("browser-path", "", "Chrome, Edge, Brave or Chromium executable for browser_launch. Found automatically when empty.")
+	allowEval := flag.Bool("allow-eval", false, "Allow browser_eval to run JavaScript in the page. Off by default.")
 	braveAPIKey := flag.String("brave-api-key", "", "Brave Search API key. Defaults to BRAVE_API_KEY when empty.")
 	tavilyAPIKey := flag.String("tavily-api-key", "", "Tavily API key. Defaults to TAVILY_API_KEY when empty.")
 	serpAPIKey := flag.String("serpapi-api-key", "", "SerpAPI key. Defaults to SERPAPI_API_KEY when empty.")
 	bingAPIKey := flag.String("bing-api-key", "", "Bing Search API key. Defaults to BING_API_KEY when empty.")
-	maxFetchBytes := flag.Int64("max-fetch-bytes", 512*1024, "Maximum bytes future fetch_url/browser_read operations may return by default.")
+	maxFetchBytes := flag.Int64("max-fetch-bytes", 512*1024, "Most bytes fetch_url returns.")
 	showVersion := flag.Bool("version", false, "Print version and exit.")
 	flag.Parse()
 

@@ -91,7 +91,7 @@ func New(config Config) (*WebTools, error) {
 // resolve converts a workspace-relative path to an absolute path under the
 // configured workspace. It rejects absolute paths and parent traversal escapes.
 func (w *WebTools) resolve(relPath string) (string, error) {
-	clean, err := cleanWorkspacePath(relPath, "path", true)
+	clean, err := cleanWorkspacePath(w.relativeToRoot(relPath), "path", true)
 	if err != nil {
 		return "", err
 	}
@@ -126,7 +126,7 @@ func (w *WebTools) resolveExisting(relPath string) (string, error) {
 // the resolved parent directory stays inside the workspace, and creates missing
 // parent directories when needed.
 func (w *WebTools) resolveOutput(relPath string) (string, error) {
-	clean, err := cleanWorkspacePath(relPath, "output_path", false)
+	clean, err := cleanWorkspacePath(w.relativeToRoot(relPath), "output_path", false)
 	if err != nil {
 		return "", err
 	}
@@ -147,6 +147,21 @@ func (w *WebTools) resolveOutput(relPath string) (string, error) {
 	return full, nil
 }
 
+// relativeToRoot turns an absolute path inside the workspace into one relative
+// to it, so agents can pass the full paths they see elsewhere. Anything else
+// is returned as given and checked by cleanWorkspacePath.
+func (w *WebTools) relativeToRoot(value string) string {
+	trimmed := filepath.Clean(strings.TrimSpace(value))
+	if !filepath.IsAbs(trimmed) {
+		return value
+	}
+	rel, err := filepath.Rel(filepath.Clean(w.root), trimmed)
+	if err != nil || filepath.IsAbs(rel) || rel == ".." || strings.HasPrefix(rel, ".."+string(os.PathSeparator)) {
+		return value
+	}
+	return rel
+}
+
 func cleanWorkspacePath(value, field string, allowDot bool) (string, error) {
 	trimmed := strings.TrimSpace(value)
 	if trimmed == "" {
@@ -156,7 +171,7 @@ func cleanWorkspacePath(value, field string, allowDot bool) (string, error) {
 		return "", fmt.Errorf("%s: required workspace-relative path", field)
 	}
 	if filepath.IsAbs(trimmed) {
-		return "", fmt.Errorf("%s: absolute paths are not allowed: %s", field, trimmed)
+		return "", fmt.Errorf("%s: %s is outside the workspace; use a path inside it", field, trimmed)
 	}
 	clean := filepath.Clean(filepath.FromSlash(trimmed))
 	if clean == "." && !allowDot {
