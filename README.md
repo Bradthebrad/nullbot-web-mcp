@@ -20,7 +20,7 @@
 | `browser_launch` | Starts Chrome, Edge, Brave, or Chromium with remote debugging on `127.0.0.1`, using a new temporary profile unless you pass `profile_dir`. |
 | `browser_navigate` | Opens an `http` or `https` URL in the active tab and waits for the page body. |
 | `browser_read` | Reads the active tab, or one CSS selector, as `text` (default), `readability` text, a DOM `outline`, or `html`. `output_limit` defaults to 32768 bytes (at most 131072). |
-| `browser_screenshot` | Saves a PNG of the viewport, or the full page with `full_page: true`, to a workspace-relative `.png` path. |
+| `browser_screenshot` | Saves a PNG of the viewport, or the full page with `full_page: true`, to a `.png` path in the workspace, relative or absolute. |
 | `browser_query` | Finds elements by CSS selector and returns their text, common attributes, visibility, and bounding box. `limit` defaults to 20 (at most 100). |
 | `browser_click` | Clicks the single element that matches a CSS selector, or the point given by `x` and `y`. Fails if the selector matches more than one element. |
 | `browser_type` | Types text into the single element that matches a selector, or into the focused element. `clear` empties the field first; `submit` presses Enter after typing. |
@@ -48,7 +48,7 @@ A typical browser flow:
 
 NullBot is a small, auditable Go agent ([Bradthebrad/nullbot](https://github.com/Bradthebrad/nullbot)) with a terminal UI and a headless CLI. Its main interface is the desktop app ([Bradthebrad/nullbot_ui](https://github.com/Bradthebrad/nullbot_ui)).
 
-1. In the desktop app, open **Tools > Marketplace** and choose **Install** on NullBot Web MCP. **Check for updates** refreshes the catalog from GitHub releases. The Marketplace installs the latest release, currently `v0.1.0`.
+1. In the desktop app, open **Tools > Marketplace** and choose **Install** on NullBot Web MCP. Install always fetches the newest release (`v0.3.0` as of this writing) and checks it against the release's `SHA256SUMS.txt`; **Check for updates** refreshes the catalog's listing.
 2. NullBot installs the server to `~/.nullbot/mcp/nullbot-web-mcp` and, when the release has a `SHA256SUMS.txt`, verifies the binary against it.
 3. NullBot starts the server over stdio with `--workspace` set to the folder of your primary project.
 4. To use `web_search`, add your Brave Search API key in **Settings > Accounts**. NullBot passes it to the server as `BRAVE_API_KEY`.
@@ -214,7 +214,7 @@ Browser control (all `browser_*` tools):
 
 Workspace writes (`browser_screenshot`):
 
-- `output_path` must be a relative path inside the workspace ending in `.png`. Empty paths, absolute paths, `..` escapes, and parent folders that are symlinks to outside the workspace are rejected. Missing parent folders are created.
+- `output_path` must be inside the workspace, relative or absolute, and end in `.png`. Empty paths, paths outside the workspace, `..` escapes, and parent folders that are symlinks to outside the workspace are rejected. Missing parent folders are created.
 
 Keys and transports:
 

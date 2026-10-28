@@ -315,3 +315,18 @@ func callToolPayload(t *testing.T, tool mcp.Tool, args map[string]any) map[strin
 	}
 	return payload
 }
+
+func TestOutputPathMayBeAbsoluteInsideTheWorkspace(t *testing.T) {
+	workspace := t.TempDir()
+	tools, err := New(Config{Workspace: workspace, CDPEndpoint: "http://127.0.0.1:1"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := tools.resolveOutput(filepath.Join(tools.root, "screens", "page.png"))
+	if err != nil || filepath.Base(got) != "page.png" {
+		t.Fatalf("absolute output path inside the workspace: %q, %v", got, err)
+	}
+	if _, err := tools.resolveOutput(filepath.Join(t.TempDir(), "page.png")); err == nil {
+		t.Fatal("absolute output path outside the workspace accepted")
+	}
+}
